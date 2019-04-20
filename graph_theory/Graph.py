@@ -36,15 +36,18 @@ class Graph:
 
     def djikstra(self, from_node: Node):
         seen: set = set([])
-        priority_queue: PriorityQueue = PriorityQueue()
+        dict_nodes: Dict[Node, int] = {}
         distances: Dict[Node, int] = {}
         for node in self.nodes.values():
             distances[node] = sys.maxsize
+            dict_nodes[node] = sys.maxsize
         distances[from_node] = 0
-        priority_queue.push(0, from_node)
+        dict_nodes[from_node] = 0
         came_from: Dict[Node, Node] = {}
-        while len(priority_queue.heap) > 0:
-            current_node: Node = priority_queue.pop()  # use a heap
+        while len(dict_nodes) > 0:
+            print(len(dict_nodes))
+            current_node: Node = min(dict_nodes, key=dict_nodes.get)  # use a heap
+            del dict_nodes[current_node]
             current_node_cost: int = distances[current_node]
             seen.add(current_node)
             for edge in current_node.edges:
@@ -52,9 +55,9 @@ class Graph:
                 if connected_node in seen:
                     continue
                 connected_node_cost: int = current_node_cost + edge.cost
-                priority_queue.push(connected_node_cost, connected_node)
                 if connected_node_cost < distances[connected_node]:
                     distances[connected_node] = connected_node_cost
+                    dict_nodes[connected_node] = connected_node_cost
                     came_from[connected_node] = current_node
         return came_from, distances
 
@@ -62,12 +65,7 @@ class Graph:
 def get_path_and_cost(came_from: Dict[Node, Node], distances: Dict[Node, int], from_node: Node, to_node: Node):
     path: List[Node] = [to_node]  # could be a set
     while path[0] is not from_node:
-        if path[0] in path:
-            return "No Path"
-        try:
-            path.insert(0, came_from[path[0]])
-        except KeyError:
-            return "No Path"
+        path.insert(0, came_from[path[0]])
     return path, distances[to_node]
 
 
@@ -77,9 +75,8 @@ if __name__ == '__main__':
     graph.add_node([10, 0])
     graph.add_node([10, 10])
     graph.add_node([20, 20])
-    graph.add_edge([0, 0], [10, 0], measure_distance([0, 0], [10, 0]))
+    graph.add_edge([0, 0], [10, 0], 10)
+    graph.add_edge([10, 10], [0, 0], 5)
     graph.add_edge([10, 10], [20, 20], 20)
-    graph.add_edge([20, 20], [10, 0], 10)
-    print(graph.shortest_path([20, 20], [0, 0]))
-    print(measure_distance([0, 0], [40, 40]))
+    print(graph.shortest_path([0, 0], [20, 20]))
     pass
