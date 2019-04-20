@@ -23,9 +23,11 @@ class Graph:
         node2.add_edge(edge)
 
     def add_node(self, node_position: List[int]):
+        assert len(node_position) == 2, "length of the node_position must be two!"
         self.nodes[str(node_position)] = Node(*node_position)
 
     def shortest_path(self, from_node_position: List[int], to_node_position: List[int]):
+        assert str(from_node_position) in self.nodes.keys() and str(to_node_position) in self.nodes.keys(), "Nodes have to be in the graph !"
         from_node: Node = self.nodes[str(from_node_position)]
         to_node: Node = self.nodes[str(to_node_position)]
         if self.came_from is None:  # from_node make sure djikstra was made for the right start node.
@@ -60,6 +62,8 @@ class Graph:
 def get_path_and_cost(came_from: Dict[Node, Node], distances: Dict[Node, int], from_node: Node, to_node: Node):
     path: List[Node] = [to_node]  # could be a set
     while path[0] is not from_node:
+        if path[0] in path:
+            return "No Path"
         try:
             path.insert(0, came_from[path[0]])
         except KeyError:

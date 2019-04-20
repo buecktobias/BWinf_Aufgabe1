@@ -46,7 +46,7 @@ street_points = [[0, y] for y in range(0, canvas_height, 10)]
 all_important_points = street_points
 for polygon in test_polygons:
     all_important_points.extend([point for point in polygon])
-
+all_important_points.append(start_point)
 for point in all_important_points:
     graph.add_node(point)
 
@@ -58,7 +58,5 @@ for line in all_important_lines:
         # canvas.pack()
         # canvas.update()
 print(graph.shortest_path(start_point, [0, 10]))
-
-
-
+canvas.mainloop()
 
