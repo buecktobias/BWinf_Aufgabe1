@@ -10,7 +10,6 @@ def measure_distance(cords1, cords2):
 
 def intersects_with_polygons(s_poly: LinearRing, s_line: LineString):
     intersection = s_poly.intersection(s_line)
-    #print(intersection)
     if intersection.geom_type == "MultiPoint":
         return True
     return False

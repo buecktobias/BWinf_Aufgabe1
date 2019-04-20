@@ -1,3 +1,5 @@
+from typing import List
+
 from graph_theory.Graph import Graph
 import tkinter as tk
 from helper_functions_aufgabe1 import *
@@ -27,6 +29,7 @@ def create_polygons(canvas: tk.Canvas, polygons: list):
 
 
 start_point, test_polygons = get_polygons_from_file("input/lisarennt3.txt")
+shapely_polygons: List[LinearRing] = [LinearRing(poly) for poly in test_polygons]
 root: tk.Tk = tk.Tk()
 canvas_width: int = 800
 canvas_height: int = 800
@@ -34,19 +37,27 @@ canvas: tk.Canvas = tk.Canvas(root, width=canvas_width, height=canvas_height)
 create_polygons(canvas, test_polygons)
 canvas.create_oval(start_point[0] - 10, start_point[1] - 10, start_point[0] + 10, start_point[1] + 10)
 canvas.pack()
+canvas.update()
 graph: Graph = Graph()
 open_nodes: list = [start_point]
-start_node: Node = Node(start_point[0], start_point[1])
-graph.add_node(start_node)
+graph.add_node(start_point)
 
 street_points = [[0, y] for y in range(0, canvas_height, 10)]
 all_important_points = street_points
 for polygon in test_polygons:
     all_important_points.extend([point for point in polygon])
 
+for point in all_important_points:
+    graph.add_node(point)
+
 all_important_lines = combinations(all_important_points, 2)
-while len(open_nodes) > 0:
-    current_node = open_nodes.pop()
+for line in all_important_lines:
+    if is_line_segment_free(line[0], line[1], shapely_polygons, canvas_width=canvas_width, canvas_height=canvas_height):
+        graph.add_edge(line[0], line[1], measure_distance(line[0], line[1]))
+        # canvas.create_line(line[0], line[1])
+        # canvas.pack()
+        # canvas.update()
+print(graph.shortest_path(start_point, [0, 10]))
 
 
 

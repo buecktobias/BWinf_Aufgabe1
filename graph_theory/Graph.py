@@ -5,6 +5,7 @@ from typing import Dict, Optional, List
 from graph_theory.PriorityQueue import PriorityQueue
 from graph_theory.Node import Node
 from graph_theory.Edge import Edge
+from helper_functions_aufgabe1 import measure_distance
 
 
 class Graph:
@@ -59,20 +60,22 @@ class Graph:
 def get_path_and_cost(came_from: Dict[Node, Node], distances: Dict[Node, int], from_node: Node, to_node: Node):
     path: List[Node] = [to_node]  # could be a set
     while path[0] is not from_node:
-        path.insert(0, came_from[path[0]])
+        try:
+            path.insert(0, came_from[path[0]])
+        except KeyError:
+            return "No Path"
     return path, distances[to_node]
 
 
 if __name__ == '__main__':
     graph = Graph()
+    graph.add_node([0, 0])
+    graph.add_node([10, 0])
     graph.add_node([10, 10])
     graph.add_node([20, 20])
-    graph.add_node([30, 30])
-
-    graph.add_edge([10, 10], [20, 20], 3)
-    graph.add_edge([30, 30], [20, 20], 5)
-
-    start = time.time_ns()
-    print(graph.shortest_path([10, 10], [20, 20]))
-    end = time.time_ns()
-    first_shortest_path = end - start
+    graph.add_edge([0, 0], [10, 0], measure_distance([0, 0], [10, 0]))
+    graph.add_edge([10, 10], [20, 20], 20)
+    graph.add_edge([20, 20], [10, 0], 10)
+    print(graph.shortest_path([20, 20], [0, 0]))
+    print(measure_distance([0, 0], [40, 40]))
+    pass
