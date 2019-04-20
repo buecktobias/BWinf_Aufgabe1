@@ -1,3 +1,4 @@
+import sys
 from typing import List
 
 from graph_theory.Graph import Graph
@@ -5,6 +6,18 @@ import tkinter as tk
 from helper_functions_aufgabe1 import *
 from graph_theory.Node import Node
 from itertools import combinations
+
+
+def measure_time(t_distance, speed_kmh):
+    speed_ms = speed_kmh / 3.6
+    time = t_distance / speed_ms
+    return time
+
+
+def time_needed_minus_bus_time(t_distance, to_cords):
+    time_to_road = measure_time(t_distance, 15)
+    bus_time = measure_time(to_cords[1], 30)
+    return time_to_road - bus_time
 
 
 def get_polygons_from_file(file_name: str):
@@ -57,6 +70,19 @@ for line in all_important_lines:
         # canvas.create_line(line[0], line[1])
         # canvas.pack()
         # canvas.update()
-print(graph.shortest_path(start_point, [0, 10]))
+
+
+smallest_time = sys.maxsize
+for y in range(0, canvas_height, 10):
+    path, distance = graph.shortest_path(start_point, [0, y])
+    time = time_needed_minus_bus_time(distance, [0, y])
+    if time < smallest_time:
+        smallest_time = time
+        best_path = path
+print(best_path)
+for i in range(1, len(best_path)):
+    canvas.create_line(best_path[i-1].x, best_path[i-1].y, best_path[i].x, best_path[i].y)
+canvas.pack()
+canvas.update()
 canvas.mainloop()
 

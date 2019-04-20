@@ -45,7 +45,6 @@ class Graph:
         dict_nodes[from_node] = 0
         came_from: Dict[Node, Node] = {}
         while len(dict_nodes) > 0:
-            print(len(dict_nodes))
             current_node: Node = min(dict_nodes, key=dict_nodes.get)  # use a heap
             del dict_nodes[current_node]
             current_node_cost: int = distances[current_node]
