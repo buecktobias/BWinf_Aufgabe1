@@ -24,7 +24,8 @@ class Graph:
 
     def add_node(self, node_position: List[int]):
         assert len(node_position) == 2, "length of the node_position must be two!"
-        self.nodes[str(node_position)] = Node(*node_position)
+        if str(node_position) not in self.nodes:
+            self.nodes[str(node_position)] = Node(*node_position)
 
     def shortest_path(self, from_node_position: List[int], to_node_position: List[int]):
         assert str(from_node_position) in self.nodes.keys() and str(to_node_position) in self.nodes.keys(), "Nodes have to be in the graph !"

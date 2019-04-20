@@ -14,7 +14,7 @@ def intersects_with_polygons(s_poly: LinearRing, s_line: LineString):
         return True
     return False
 
-def is_line_segment_free(from_cords, to_cords, shapely_polygons, canvas_width, canvas_height):
+def is_line_segment_free(from_cords, to_cords, shapely_polygons):
     from_cords = [round(x) for x in from_cords]
     to_cords = [round(x) for x in to_cords]
     s_line = LineString([from_cords, to_cords])
