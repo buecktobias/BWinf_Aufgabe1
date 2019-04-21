@@ -86,9 +86,9 @@ if __name__ == '__main__':
             graph.add_node(optimal_target)
             graph.add_edge(current_node, optimal_target, measure_distance(current_node, optimal_target))
             add(optimal_targets_list, optimal_target)
-            canvas.create_line(current_node, optimal_target)
-            canvas.pack()
-            canvas.update()
+            #canvas.create_line(current_node, optimal_target)
+            #canvas.pack()
+            #canvas.update()
 
         # polygon edges
         else:
@@ -98,9 +98,9 @@ if __name__ == '__main__':
                     graph.add_node(point)
                     graph.add_edge(current_node, point, measure_distance(current_node, point))
                     add(open_nodes, point)
-                    canvas.create_line(current_node, point)
-                    canvas.pack()
-                    canvas.update()
+                    #canvas.create_line(current_node, point)
+                    #canvas.pack()
+                    #canvas.update()
 
     smallest_time = sys.maxsize
     for street_point in optimal_targets_list:
