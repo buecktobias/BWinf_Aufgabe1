@@ -77,7 +77,6 @@ if __name__ == '__main__':
     optimal_targets_list: list = []
     while len(open_nodes) > 0:
         current_node = open_nodes.pop()
-        all_polygon_edges.remove(current_node)
         graph.add_node(current_node)
         y__ = current_node[1] + tan(0.5235988) * current_node[0]  # 0.523599 is about 30 degrees in radians
         optimal_target: list = [0, y__]
@@ -85,18 +84,19 @@ if __name__ == '__main__':
             graph.add_node(optimal_target)
             graph.add_edge(current_node, optimal_target, measure_distance(current_node, optimal_target))
             add(optimal_targets_list, optimal_target)
-            canvas.create_line(current_node, optimal_target)
-            canvas.pack()
-            canvas.update()
+            #canvas.create_line(current_node, optimal_target)
+            #canvas.pack()
+            #canvas.update()
         else:
+            all_polygon_edges.remove(current_node)
             for point in all_polygon_edges:
                 if is_line_segment_free(current_node, point, shapely_polygons):
                     graph.add_node(point)
                     graph.add_edge(current_node, point, measure_distance(current_node, point))
                     add(open_nodes, point)
-                    canvas.create_line(current_node, point)
-                    canvas.pack()
-                    canvas.update()
+                    #canvas.create_line(current_node, point)
+                    #canvas.pack()
+                    #canvas.update()
 
     smallest_time = sys.maxsize
     for street_point in optimal_targets_list:
