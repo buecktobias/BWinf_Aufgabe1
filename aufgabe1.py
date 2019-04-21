@@ -1,6 +1,8 @@
 import sys
 from typing import List
-from time import time_ns
+from time import time_ns,sleep
+
+from Animation.Bus import Bus
 from graph_theory.Graph import Graph
 import tkinter as tk
 from math import tan
@@ -46,6 +48,12 @@ def create_polygons(canvas: tk.Canvas, polygons: list):
         canvas.pack()
         canvas.update()
 
+
+def animate(start_point):
+    bus = Bus(canvas, 0, 0, 20, 20, 0, 1)
+    while (True):
+        bus.update()
+        sleep(0.01)
 
 if __name__ == '__main__':
     start_time = time_ns()
@@ -118,4 +126,5 @@ if __name__ == '__main__':
     end_time = time_ns()
     measured_time = end_time - start_time
     print(f"It needed " + str(measured_time) + " nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
+    animate(start_point)
     canvas.mainloop()
