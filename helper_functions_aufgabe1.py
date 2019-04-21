@@ -1,5 +1,5 @@
 import math
-from shapely.geometry.polygon import LinearRing, LineString
+from shapely.geometry.polygon import LinearRing, LineString,Polygon
 from shapely.geometry import MultiLineString
 
 def measure_distance(cords1, cords2):
@@ -8,11 +8,8 @@ def measure_distance(cords1, cords2):
     return math.sqrt(x_distance*x_distance + y_distance*y_distance)
 
 
-def intersects_with_polygons(s_poly: LinearRing, s_line: LineString):
-    intersection = s_poly.intersection(s_line)
-    if intersection.geom_type == "MultiPoint":
-        return True
-    return False
+def intersects_with_polygons(s_poly: Polygon, s_line: LineString):
+    return s_line.intersects(s_poly) and not s_line.touches(s_poly)
 
 def is_line_segment_free(from_cords, to_cords, shapely_polygons):
     from_cords = [round(x) for x in from_cords]

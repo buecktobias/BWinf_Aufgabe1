@@ -51,7 +51,7 @@ if __name__ == '__main__':
     start_time = time_ns()
 
     start_point, test_polygons = get_polygons_from_file("input/lisarennt5.txt")
-    shapely_polygons: List[LinearRing] = [LinearRing(poly) for poly in test_polygons]
+    shapely_polygons: List[Polygon] = [Polygon(poly) for poly in test_polygons]
     root: tk.Tk = tk.Tk()
     canvas_width: int = 800
     canvas_height: int = 800
