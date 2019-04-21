@@ -19,8 +19,10 @@ class Graph:
         node1 = self.nodes[str(node1_position)]
         node2 = self.nodes[str(node2_position)]
         edge: Edge = Edge(node1, node2, cost)
-        node1.add_edge(edge)
-        node2.add_edge(edge)
+        if edge not in self.edges:
+            self.edges.add(edge)
+            node1.add_edge(edge)
+            node2.add_edge(edge)
 
     def add_node(self, node_position: List[int]):
         assert len(node_position) == 2, "length of the node_position must be two!"
@@ -36,6 +38,8 @@ class Graph:
         return get_path_and_cost(self.came_from, self.distances, from_node, to_node)
 
     def djikstra(self, from_node: Node):
+        # TODO priority queue!!
+        print(f"Djikstra Algorithm on {len(self.nodes)} Nodes and {len(self.edges)} Edges")
         seen: set = set([])
         dict_nodes: Dict[Node, int] = {}
         distances: Dict[Node, int] = {}

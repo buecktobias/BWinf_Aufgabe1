@@ -50,7 +50,7 @@ def create_polygons(canvas: tk.Canvas, polygons: list):
 if __name__ == '__main__':
     start_time = time_ns()
 
-    start_point, test_polygons = get_polygons_from_file("input/lisarennt3.txt")
+    start_point, test_polygons = get_polygons_from_file("input/lisarennt5.txt")
     shapely_polygons: List[LinearRing] = [LinearRing(poly) for poly in test_polygons]
     root: tk.Tk = tk.Tk()
     canvas_width: int = 800
@@ -79,17 +79,24 @@ if __name__ == '__main__':
         current_node = open_nodes.pop()
         all_polygon_edges.remove(current_node)
         graph.add_node(current_node)
-        for point in all_polygon_edges:
-            if is_line_segment_free(current_node, point, shapely_polygons):
-                graph.add_node(point)
-                graph.add_edge(current_node, point, measure_distance(current_node, point))
-                add(open_nodes, point)
-        y__ = current_node[1] + tan(0.523599) * current_node[0]  # 0.523599 is about 30 degrees in radians
+        y__ = current_node[1] + tan(0.5235988) * current_node[0]  # 0.523599 is about 30 degrees in radians
         optimal_target: list = [0, y__]
         if is_line_segment_free(current_node, optimal_target, shapely_polygons):
             graph.add_node(optimal_target)
             graph.add_edge(current_node, optimal_target, measure_distance(current_node, optimal_target))
             add(optimal_targets_list, optimal_target)
+            canvas.create_line(current_node, optimal_target)
+            canvas.pack()
+            canvas.update()
+        else:
+            for point in all_polygon_edges:
+                if is_line_segment_free(current_node, point, shapely_polygons):
+                    graph.add_node(point)
+                    graph.add_edge(current_node, point, measure_distance(current_node, point))
+                    add(open_nodes, point)
+                    canvas.create_line(current_node, point)
+                    canvas.pack()
+                    canvas.update()
 
     smallest_time = sys.maxsize
     for street_point in optimal_targets_list:
@@ -98,12 +105,13 @@ if __name__ == '__main__':
         if time < smallest_time:
             smallest_time = time
             best_path = path
-    print(best_path)
+            best_distance = distance
+    print(f"best path {best_path} distance {best_distance} smallest time {smallest_time}")
     for i in range(1, len(best_path)):
         canvas.create_line(best_path[i-1].x, best_path[i-1].y, best_path[i].x, best_path[i].y)
     canvas.pack()
     canvas.update()
     end_time = time_ns()
     measured_time = end_time - start_time
-    print(f"It needed " + str(measured_time) + "nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
+    print(f"It needed " + str(measured_time) + " nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
     canvas.mainloop()
