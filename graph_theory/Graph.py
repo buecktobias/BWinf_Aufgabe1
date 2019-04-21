@@ -2,11 +2,12 @@ import sys
 import time
 from typing import Dict, Optional, List
 
+from graph_theory.HeapEntry import HeapEntry
 from graph_theory.PriorityQueue import PriorityQueue
 from graph_theory.Node import Node
 from graph_theory.Edge import Edge
 from helper_functions_aufgabe1 import measure_distance
-
+import heapq
 
 class Graph:
     def __init__(self) -> None:
@@ -38,20 +39,23 @@ class Graph:
         return get_path_and_cost(self.came_from, self.distances, from_node, to_node)
 
     def djikstra(self, from_node: Node):
-        # TODO priority queue!!
         print(f"Djikstra Algorithm on {len(self.nodes)} Nodes and {len(self.edges)} Edges")
         seen: set = set([])
-        dict_nodes: Dict[Node, int] = {}
+        nodes: List = []
         distances: Dict[Node, int] = {}
         for node in self.nodes.values():
-            distances[node] = sys.maxsize
-            dict_nodes[node] = sys.maxsize
-        distances[from_node] = 0
-        dict_nodes[from_node] = 0
+            if node is from_node:
+                distances[node] = 0
+                heap_entry = HeapEntry(0, node)
+                heapq.heappush(nodes, heap_entry)
+            else:
+                distances[node] = sys.maxsize
+                heap_entry = HeapEntry(sys.maxsize, node)
+                nodes.append(heap_entry)
+
         came_from: Dict[Node, Node] = {}
-        while len(dict_nodes) > 0:
-            current_node: Node = min(dict_nodes, key=dict_nodes.get)  # use a heap
-            del dict_nodes[current_node]
+        while len(nodes) > 0:
+            current_node: Node = heapq.heappop(nodes).node
             current_node_cost: int = distances[current_node]
             seen.add(current_node)
             for edge in current_node.edges:
@@ -61,7 +65,7 @@ class Graph:
                 connected_node_cost: int = current_node_cost + edge.cost
                 if connected_node_cost < distances[connected_node]:
                     distances[connected_node] = connected_node_cost
-                    dict_nodes[connected_node] = connected_node_cost
+                    heapq.heappush(nodes, HeapEntry(connected_node_cost, connected_node))
                     came_from[connected_node] = current_node
         return came_from, distances
 
