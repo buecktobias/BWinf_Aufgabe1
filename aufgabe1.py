@@ -1,3 +1,4 @@
+import datetime
 import sys
 import tkinter
 from typing import List
@@ -51,6 +52,10 @@ def create_polygons(canvas: tkinter.Canvas, polygons: List[Polygon]):
 
 
 def animate(start_point, best_path, lisa, smallest_time):
+    time_difference_lisa_and_bus = datetime.timedelta(seconds=smallest_time)
+    bus_driving_time = datetime.datetime(year=2019, month=4, day=15, hour=7, minute=30, second=0)
+    time_lisa_needs_to_start = bus_driving_time - time_difference_lisa_and_bus
+    text = canvas.create_text(460, 20, text=f"{time_lisa_needs_to_start.hour}:{time_lisa_needs_to_start.minute}:{time_lisa_needs_to_start.second}")
     smallest_time = round(smallest_time) * 5
     bus = Bus(canvas, 0, 0, 20, 20, 0, 30 / 3.6 / 5)
     i = 1
@@ -58,7 +63,10 @@ def animate(start_point, best_path, lisa, smallest_time):
         if round(lisa.x) == lisa.to_x and round(lisa.y) == lisa.to_y:
             lisa.move_to(best_path[i].x, best_path[i].y)
             i += 1
-
+        if smallest_time % 5 == 0:
+            time_lisa_needs_to_start = time_lisa_needs_to_start + datetime.timedelta(seconds=1)
+        canvas.delete(text)
+        text = canvas.create_text(700, 20, text=f"{time_lisa_needs_to_start.hour}:{time_lisa_needs_to_start.minute}:{time_lisa_needs_to_start.second}", font=("Purisa", 30))
         lisa.update()
         smallest_time -= 1
         if smallest_time < 0:
@@ -126,13 +134,8 @@ if __name__ == '__main__':
             best_path = path
             best_distance = distance
     print(f"best path {best_path} distance {best_distance} smallest time {smallest_time}")
-    for i in range(1, len(best_path)):
-        canvas.create_line(best_path[i-1].x, best_path[i-1].y, best_path[i].x, best_path[i].y)
-
-    canvas.pack()
-    canvas.update()
     end_time = time_ns()
     measured_time = end_time - start_time
     print(f"It needed " + str(measured_time) + " nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
-    animate(start_point, best_path, lisa,smallest_time)
+    animate(start_point, best_path, lisa, smallest_time)
     canvas.mainloop()
