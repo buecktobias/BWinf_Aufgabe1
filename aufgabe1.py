@@ -1,7 +1,10 @@
 import sys
+import tkinter
 from typing import List
-from time import time_ns,sleep
+from time import time_ns, sleep
 
+from Animation.Lisa import Lisa
+from Animation.Polygon import Polygon
 from Animation.Bus import Bus
 from graph_theory.Graph import Graph
 import tkinter as tk
@@ -42,30 +45,40 @@ def get_polygons_from_file(file_name: str):
     return start_point, polygons
 
 
-def create_polygons(canvas: tk.Canvas, polygons: list):
+def create_polygons(canvas: tkinter.Canvas, polygons: List[Polygon]):
     for polygon in polygons:
-        canvas.create_polygon(polygon, fill="gray")
-        canvas.pack()
-        canvas.update()
+        polygon.show(canvas)
 
 
-def animate(start_point):
-    bus = Bus(canvas, 0, 0, 20, 20, 0, 1)
-    while (True):
-        bus.update()
+def animate(start_point, best_path, lisa, smallest_time):
+    smallest_time = round(smallest_time) * 5
+    bus = Bus(canvas, 0, 0, 20, 20, 0, 30 / 3.6 / 5)
+    i = 1
+    while True:
+        if round(lisa.x) == lisa.to_x and round(lisa.y) == lisa.to_y:
+            lisa.move_to(best_path[i].x, best_path[i].y)
+            i += 1
+
+        lisa.update()
+        smallest_time -= 1
+        if smallest_time < 0:
+            bus.update()
         sleep(0.01)
+
 
 if __name__ == '__main__':
     start_time = time_ns()
 
     start_point, test_polygons = get_polygons_from_file("input/lisarennt5.txt")
-    shapely_polygons: List[Polygon] = [Polygon(poly) for poly in test_polygons]
+    polygons: List[Polygon] = [Polygon(poly) for poly in test_polygons]
+    shapely_polygons = [polygon.shapely_polygon for polygon in polygons]
     root: tk.Tk = tk.Tk()
     canvas_width: int = 800
     canvas_height: int = 800
     canvas: tk.Canvas = tk.Canvas(root, width=canvas_width, height=canvas_height)
-    create_polygons(canvas, test_polygons)
-    canvas.create_oval(start_point[0] - 10, start_point[1] - 10, start_point[0] + 10, start_point[1] + 10)
+    create_polygons(canvas, polygons)
+    lisa = Lisa(canvas, *start_point, 15 / 3.6 / 5)
+    lisa.show()
     canvas.pack()
     canvas.update()
     graph: Graph = Graph()
@@ -94,9 +107,6 @@ if __name__ == '__main__':
             graph.add_node(optimal_target)
             graph.add_edge(current_node, optimal_target, measure_distance(current_node, optimal_target))
             add(optimal_targets_list, optimal_target)
-            #canvas.create_line(current_node, optimal_target)
-            #canvas.pack()
-            #canvas.update()
 
         # polygon edges
         else:
@@ -106,9 +116,6 @@ if __name__ == '__main__':
                     graph.add_node(point)
                     graph.add_edge(current_node, point, measure_distance(current_node, point))
                     add(open_nodes, point)
-                    #canvas.create_line(current_node, point)
-                    #canvas.pack()
-                    #canvas.update()
 
     smallest_time = sys.maxsize
     for street_point in optimal_targets_list:
@@ -121,10 +128,11 @@ if __name__ == '__main__':
     print(f"best path {best_path} distance {best_distance} smallest time {smallest_time}")
     for i in range(1, len(best_path)):
         canvas.create_line(best_path[i-1].x, best_path[i-1].y, best_path[i].x, best_path[i].y)
+
     canvas.pack()
     canvas.update()
     end_time = time_ns()
     measured_time = end_time - start_time
     print(f"It needed " + str(measured_time) + " nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
-    animate(start_point)
+    animate(start_point, best_path, lisa,smallest_time)
     canvas.mainloop()
