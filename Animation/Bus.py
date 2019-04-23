@@ -11,20 +11,20 @@ class Bus:
         self.y_speed = y_speed
         self.width = width
         self.height = height
-        self.image = None
+        self.canvas_image = None
+        pil_image: Image = Image.open("Bus.jpg")
+        pil_image = pil_image.resize((30, 30))
+        self.image = ImageTk.PhotoImage(pil_image)
         self.show()
 
     def update(self):
         self.x += self.x_speed
         self.y += self.y_speed
-        self.canvas.delete(self.image)
+        self.canvas.delete(self.canvas_image)
         self.show()
 
     def show(self):
-        pil_image: Image = Image.open("Bus.jpg")
-        pil_image = pil_image.resize((20, 20))
-        img = ImageTk.PhotoImage(pil_image)
-        self.image = self.canvas.create_image(self.x, self.y, image=img, anchor="nw")
+        self.canvas_image = self.canvas.create_image(self.x, self.y, image=self.image, anchor="nw")
         self.canvas.pack()
         self.canvas.update()
 

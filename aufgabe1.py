@@ -137,5 +137,6 @@ if __name__ == '__main__':
     end_time = time_ns()
     measured_time = end_time - start_time
     print(f"It needed " + str(measured_time) + " nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
+    sleep(15)
     animate(start_point, best_path, lisa, smallest_time)
     canvas.mainloop()

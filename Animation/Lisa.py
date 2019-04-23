@@ -1,6 +1,8 @@
 import math
 import tkinter
 
+from PIL import Image, ImageTk
+
 
 class Lisa:
     def __init__(self, canvas, x, y, velocity):
@@ -9,8 +11,11 @@ class Lisa:
         self.y = y
         self.x_speed = 0
         self.y_speed = 0
-        self.image = None
-        self.canvas = canvas
+        pil_image: Image = Image.open("Lisa.png")
+        pil_image = pil_image.resize((20, 30))
+        self.image = ImageTk.PhotoImage(pil_image)
+        self.canvas_image = None
+        self.canvas: tkinter.Canvas = canvas
         self.to_x = x
         self.to_y = y
 
@@ -29,10 +34,10 @@ class Lisa:
             self.y_speed = 0
         self.x += self.x_speed
         self.y += self.y_speed
-        self.canvas.delete(self.image)
+        self.canvas.delete(self.canvas_image)
         self.show()
 
     def show(self):
-        self.image = self.canvas.create_oval(round(self.x) - 10, round(self.y) - 10, round(self.x) + 10, round(self.y) + 10, fill="red")
+        self.canvas_image = self.canvas.create_image(self.x, self.y, image=self.image)
         self.canvas.pack()
         self.canvas.update()
