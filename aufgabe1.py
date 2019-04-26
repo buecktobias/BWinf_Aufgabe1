@@ -1,12 +1,16 @@
 import datetime
+import random
 import sys
 import tkinter
 from typing import List
 from time import time_ns, sleep
 
+from shapely.geometry import Point
+
 from Animation.Lisa import Lisa
 from Animation.Polygon import Polygon
 from Animation.Bus import Bus
+from PolygonGenerator import generate_polygons
 from graph_theory.Graph import Graph
 import tkinter as tk
 from math import tan
@@ -51,7 +55,7 @@ def create_polygons(canvas: tkinter.Canvas, polygons: List[Polygon]):
         polygon.show(canvas)
 
 
-def animate(start_point, best_path, lisa, smallest_time):
+def animate(best_path, lisa, smallest_time, canvas):
     time_difference_lisa_and_bus = datetime.timedelta(seconds=smallest_time)
     bus_driving_time = datetime.datetime(year=2019, month=4, day=15, hour=7, minute=30, second=0)
     time_lisa_needs_to_start = bus_driving_time - time_difference_lisa_and_bus
@@ -74,26 +78,40 @@ def animate(start_point, best_path, lisa, smallest_time):
         sleep(0.01)
 
 
-if __name__ == '__main__':
-    start_time = time_ns()
+def is_point_in_any_polygon(point, polygons: List[Polygon]):
+    for polygon in polygons:
+        if polygon.shapely_polygon.contains(point):
+            return True
+    return False
 
-    start_point, test_polygons = get_polygons_from_file("input/lisarennt5.txt")
+
+def random_start_point(polygons: List[Polygon], width, height):
+    point = Point(random.randint(0, width), random.randint(0, height))
+    while is_point_in_any_polygon(point, polygons):
+        point = Point(random.randint(0, width), random.randint(0, height))
+    return [point.x, point.y]
+
+
+def main(number_of_polygons, make_animation=True):
+    start_time = time_ns()
+    # start_point, test_polygons = get_polygons_from_file("input/lisarennt5.txt")
+    test_polygons = generate_polygons(number_of_polygons, 800, 800, 50)
     polygons: List[Polygon] = [Polygon(poly) for poly in test_polygons]
+    start_point = random_start_point(polygons, 800, 800)
     shapely_polygons = [polygon.shapely_polygon for polygon in polygons]
     root: tk.Tk = tk.Tk()
     canvas_width: int = 800
     canvas_height: int = 800
     canvas: tk.Canvas = tk.Canvas(root, width=canvas_width, height=canvas_height)
     create_polygons(canvas, polygons)
-    lisa = Lisa(canvas, *start_point, 15 / 3.6 / 5)
-    lisa.show()
+    if make_animation:
+        lisa = Lisa(canvas, *start_point, 15 / 3.6 / 5)
     canvas.pack()
     canvas.update()
     graph: Graph = Graph()
     open_nodes: list = [start_point]
 
     already_checked: set = set([])
-    graph.add_node(start_point)
 
     street_points = [[0, y] for y in range(0, canvas_height, 10)]
     all_important_points = street_points
@@ -133,10 +151,27 @@ if __name__ == '__main__':
             smallest_time = time
             best_path = path
             best_distance = distance
-    print(f"best path {best_path} distance {best_distance} smallest time {smallest_time}")
+    # print(f"best path {best_path} distance {best_distance} smallest time {smallest_time}")
     end_time = time_ns()
     measured_time = end_time - start_time
-    print(f"It needed " + str(measured_time) + " nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
-    sleep(15)
-    animate(start_point, best_path, lisa, smallest_time)
-    canvas.mainloop()
+    # print(f"It needed " + str(measured_time) + " nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
+    if make_animation:
+        animate(best_path, lisa, smallest_time, canvas)
+    # canvas.mainloop()
+    return measured_time / 1000000000
+
+
+def test_performance():
+    result_file = open("aufgabe1_performance.csv", "w")
+    result_file.write("amount_of_polygons;execution_time_in_seconds\n")
+    REPETITIONS = 20
+    for amount_of_polygons in range(1, 30, 1):
+        sum_execution_time = 0
+        for repetition in range(REPETITIONS):
+            sum_execution_time += main(amount_of_polygons, False)
+        result_file.write(f"{amount_of_polygons};{sum_execution_time / REPETITIONS}\n")
+    result_file.close()
+
+
+if __name__ == '__main__':
+    test_performance()
