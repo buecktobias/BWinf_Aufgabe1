@@ -110,12 +110,6 @@ def main(make_animation=False, visualize=True):
         lisa = Lisa(canvas, *start_point, 15 / 3.6 / 5)
     graph: Graph = Graph()
     open_nodes: list = [start_point]
-
-    already_checked: set = set([])
-
-    street_points = [[0, y] for y in range(0, canvas_height, 10)]
-    all_important_points = street_points
-
     all_polygon_edges: list = [start_point]
     for polygon in test_polygons:
         for point in polygon:
