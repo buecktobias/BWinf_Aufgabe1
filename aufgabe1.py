@@ -92,22 +92,21 @@ def random_start_point(polygons: List[Polygon], width, height):
     return [point.x, point.y]
 
 
-def main(number_of_polygons, make_animation=True):
+def main(number_of_polygons, make_animation=True, visualize=True):
     start_time = time_ns()
     # start_point, test_polygons = get_polygons_from_file("input/lisarennt5.txt")
     test_polygons = generate_polygons(number_of_polygons, 800, 800, 50)
     polygons: List[Polygon] = [Polygon(poly) for poly in test_polygons]
     start_point = random_start_point(polygons, 800, 800)
     shapely_polygons = [polygon.shapely_polygon for polygon in polygons]
-    root: tk.Tk = tk.Tk()
     canvas_width: int = 800
     canvas_height: int = 800
-    canvas: tk.Canvas = tk.Canvas(root, width=canvas_width, height=canvas_height)
-    create_polygons(canvas, polygons)
-    if make_animation:
+    if visualize:
+        root: tk.Tk = tk.Tk()
+        canvas: tk.Canvas = tk.Canvas(root, width=canvas_width, height=canvas_height)
+        create_polygons(canvas, polygons)
+    if make_animation and visualize:
         lisa = Lisa(canvas, *start_point, 15 / 3.6 / 5)
-    canvas.pack()
-    canvas.update()
     graph: Graph = Graph()
     open_nodes: list = [start_point]
 
@@ -155,20 +154,22 @@ def main(number_of_polygons, make_animation=True):
     end_time = time_ns()
     measured_time = end_time - start_time
     # print(f"It needed " + str(measured_time) + " nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
-    if make_animation:
+    if make_animation and visualize:
         animate(best_path, lisa, smallest_time, canvas)
-    # canvas.mainloop()
+    if visualize:
+        canvas.mainloop()
     return measured_time / 1000000000
 
 
 def test_performance():
     result_file = open("aufgabe1_performance.csv", "w")
     result_file.write("amount_of_polygons;execution_time_in_seconds\n")
-    REPETITIONS = 20
-    for amount_of_polygons in range(1, 30, 1):
+    REPETITIONS = 200
+    for amount_of_polygons in range(1, 50, 1):
+        print(amount_of_polygons)
         sum_execution_time = 0
         for repetition in range(REPETITIONS):
-            sum_execution_time += main(amount_of_polygons, False)
+            sum_execution_time += main(amount_of_polygons, False, False)
         result_file.write(f"{amount_of_polygons};{sum_execution_time / REPETITIONS}\n")
     result_file.close()
 

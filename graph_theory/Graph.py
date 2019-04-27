@@ -39,11 +39,9 @@ class Graph:
             self._came_from, self._distances = self._djikstra(from_node)
         return _reconstruct_path(self._came_from, from_node, to_node), self._distances[to_node]
 
-
-
     def _djikstra(self, from_node: Node):
         assert from_node in self._nodes.values(), "Node has to be in the Graph!"
-        print(f"Djikstra Algorithm on {len(self._nodes)} Nodes and {len(self._edges)} Edges")
+        # print(f"Djikstra Algorithm on {len(self._nodes)} Nodes and {len(self._edges)} Edges")
         seen: Set[Node] = set([])  # Alle Nodes,die schon gesehen wurden
         nodes_heap = []  # Die Priority Queue implementiert in form eines Heaps
         distances: Dict[Node, int] = {}  # distances speichert die Distanzen zu allen Nodes
