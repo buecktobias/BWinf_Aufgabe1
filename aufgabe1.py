@@ -92,12 +92,12 @@ def random_start_point(polygons: List[Polygon], width, height):
     return [point.x, point.y]
 
 
-def main(number_of_polygons, make_animation=True, visualize=True):
+def main(make_animation=False, visualize=True):
     start_time = time_ns()
-    # start_point, test_polygons = get_polygons_from_file("input/lisarennt5.txt")
-    test_polygons = generate_polygons(number_of_polygons, 800, 800, 50)
-    polygons: List[Polygon] = [Polygon(poly) for poly in test_polygons]
-    start_point = random_start_point(polygons, 800, 800)
+    start_point, test_polygons = get_polygons_from_file("input/lisarennt5.txt")
+    # test_polygons = generate_polygons(number_of_polygons, 800, 800, 50)
+    polygons: List[Polygon] = [Polygon(poly, "P" + str(counter+1)) for counter, poly in enumerate(test_polygons)]
+    # start_point = random_start_point(polygons, 800, 800)
     shapely_polygons = [polygon.shapely_polygon for polygon in polygons]
     canvas_width: int = 800
     canvas_height: int = 800
@@ -151,9 +151,13 @@ def main(number_of_polygons, make_animation=True, visualize=True):
             best_path = path
             best_distance = distance
     # print(f"best path {best_path} distance {best_distance} smallest time {smallest_time}")
+    for i in range(1, len(best_path)):
+        canvas.create_line(best_path[i-1].x, best_path[i-1].y, best_path[i].x, best_path[i].y)
+
     end_time = time_ns()
     measured_time = end_time - start_time
     # print(f"It needed " + str(measured_time) + " nanoseconds ," + str(measured_time / 1000000) + " milliseconds ," + str(measured_time / 1000000000) + " seconds")
+
     if make_animation and visualize:
         animate(best_path, lisa, smallest_time, canvas)
     if visualize:
@@ -175,4 +179,4 @@ def test_performance():
 
 
 if __name__ == '__main__':
-    test_performance()
+    main()
