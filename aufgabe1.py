@@ -105,6 +105,7 @@ def main(make_animation=False, visualize=True):
         root: tk.Tk = tk.Tk()
         canvas: tk.Canvas = tk.Canvas(root, width=canvas_width, height=canvas_height)
         create_polygons(canvas, polygons)
+        canvas.create_oval(start_point[0] - 10, start_point[1] - 10, start_point[0] + 10, start_point[1] + 10)
     if make_animation and visualize:
         lisa = Lisa(canvas, *start_point, 15 / 3.6 / 5)
     graph: Graph = Graph()
