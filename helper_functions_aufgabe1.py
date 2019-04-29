@@ -1,6 +1,5 @@
 import math
-from shapely.geometry.polygon import LinearRing, LineString, Polygon as ShapelyPolygon
-from shapely.geometry import MultiLineString
+from shapely.geometry.polygon import LineString, Polygon as ShapelyPolygon
 
 
 def measure_distance(cords1, cords2):

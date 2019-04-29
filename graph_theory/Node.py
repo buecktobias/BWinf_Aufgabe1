@@ -5,7 +5,7 @@ class Node:
     def __init__(self, x: int, y: int):
         self.x: int = x
         self.y: int = y
-        self.name = f"({self.x}, {self.y})"
+        self.name = f"({round(self.x)}, {round(self.y)})"
         self.edges: set = set([])
 
     def add_edge(self, edge: Edge):
